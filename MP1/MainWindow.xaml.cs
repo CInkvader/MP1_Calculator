@@ -630,7 +630,7 @@ namespace MP1
             public static void HexadecimalToBinary(string hexadecimal)
             {
                 string binary = string.Empty;
-
+                   
                 
             }
         }
