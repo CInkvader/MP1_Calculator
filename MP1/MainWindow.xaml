@@ -1,0 +1,215 @@
+﻿<Window x:Class="MP1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MP1"
+        mc:Ignorable="d"
+        Title="Calculator"
+        MinHeight="645" MaxHeight="645" Height="645"
+        MinWidth="380" Width="380" MaxWidth="380" Background="#FF202020">
+    <Window.Resources>
+        <Style x:Key="btnModeSelect" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnNumBorder" CornerRadius="8" Background="Transparent" BorderThickness="0" Margin="5 0 5 0" Height="40">
+                            <ContentPresenter
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background"
+                                        Value="#FF2D2D2C"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background" Value="#FF292928"/>
+                                <Setter Property="Foreground" Value="#FFCECECE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style x:Key="btnNum" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnNumBorder" CornerRadius="10" Background="#FF3B3B3B"
+                                BorderBrush="#FF3B3B3B" BorderThickness="1" Margin="1">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background"
+                                        Value="#FF323232"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background" Value="#FF282827"/>
+                                <Setter Property="Foreground" Value="#FF929292"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="btnNumBorder" Property="Background" Value="#FF282827"/>
+                                <Setter Property="Foreground" Value="#FF6B6B6B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Width" Value="70"/>
+        </Style>
+        <Style x:Key="btnOperation" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnNumBorder" CornerRadius="10" Background="#FF323232"
+                                BorderBrush="#FF3B3B3B" BorderThickness="1" Margin="1">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background"
+                                        Value="#FF3B3B3B"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background" Value="#FF323232"/>
+                                <Setter Property="Foreground" Value="#FF929292"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Width" Value="70"/>
+        </Style>
+        <Style x:Key="btnHex" TargetType="Button" BasedOn="{StaticResource btnNum}">
+        </Style>
+        <Style x:Key="btnEql" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnNumBorder" CornerRadius="10" Background="#FF91EBDC"
+                                BorderBrush="#FF91EBDC" BorderThickness="1" Margin="1">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background"
+                                        Value="#FF85D6C9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="btnNumBorder" Property="Background" Value="#FF7AC2B6"/>
+                                <Setter Property="Foreground" Value="#FF4E7C74"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="#FF28413D"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Width" Value="140"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <StackPanel Height="610" Width="360" Orientation="Vertical" Background="#FF202020">
+            <StackPanel Height="300" Orientation="Vertical">
+                <StackPanel Height="40" Margin="10 40 10 0" Orientation="Horizontal">
+                    <Button Style="{StaticResource btnOperation}" Height="30" Width="30" Visibility="Hidden">
+                        <TextBlock Text='&lt;' FontSize="15" Margin="0 0 0 3"/>
+                    </Button>
+                    <TextBlock x:Name="tbHistory" Width="310" FontSize="20" Text="" TextAlignment="Right" Foreground="#FF9F9F9E"/>
+                </StackPanel>
+                <TextBlock x:Name="tbInput" Height="50" Margin="10 0 10 0" FontSize="40" Text="0" TextAlignment="Right" Foreground="White"/>
+
+                <Button x:Name="btnHEX" Style="{StaticResource btnModeSelect}" Click="btnHEX_Click">
+                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+                        <Rectangle x:Name="rctHEX" Width="5" Height="25" Fill="Transparent" RadiusY="2.5" RadiusX="2.5" Margin="-5 0 10 0"/>
+                        <TextBlock Height="26" Width="60" Text="HEX" FontSize="18"/>
+                        <TextBlock x:Name="tbHEX" Height="26" Text="0" FontSize="18"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="btnDEC" Style="{StaticResource btnModeSelect}" Click="btnDEC_Click">
+                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+                        <Rectangle x:Name="rctDEC" Width="5" Height="25" Fill="Transparent" RadiusY="2.5" RadiusX="2.5" Margin="-5 0 10 0"/>
+                        <TextBlock Height="26" Width="60" Text="DEC" FontSize="18"/>
+                        <TextBlock x:Name="tbDEC" Height="26" Text="0" FontSize="18"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="btnOCT" Style="{StaticResource btnModeSelect}" Click="btnOCT_Click">
+                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+                        <Rectangle x:Name="rctOCT" Width="5" Height="25" Fill="Transparent" RadiusY="2.5" RadiusX="2.5" Margin="-5 0 10 0"/>
+                        <TextBlock Height="26" Width="60" Text="OCT" FontSize="18"/>
+                        <TextBlock x:Name="tbOCT" Height="26" Text="0" FontSize="18"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="btnBIN" Style="{StaticResource btnModeSelect}" Click="btnBIN_Click">
+                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+                        <Rectangle x:Name="rctBIN" Width="5" Height="25" Fill="Transparent" RadiusY="2.5" RadiusX="2.5" Margin="-5 0 10 0"/>
+                        <TextBlock Height="26" Width="60" Text="BIN" FontSize="18"/>
+                        <TextBlock x:Name="tbBIN" Height="26" Text="0" FontSize="18"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Height="300" Width="360" Orientation="Vertical">
+                <StackPanel Height="50" Width="350" Orientation="Horizontal">
+                    <Button x:Name="btnHexA" Style="{StaticResource btnHex}" Content="A"/>
+                    <Button x:Name="btnClearEntry" Style="{StaticResource btnOperation}" Content="CE"/>
+                    <Button x:Name="btnClear" Style="{StaticResource btnOperation}" Content="C"/>
+                    <Button x:Name="btnDelete" Style="{StaticResource btnOperation}" Width="140" Content="DEL"/>
+                </StackPanel>
+                <StackPanel Height="50" Width="350" Orientation="Horizontal">
+                    <Button x:Name="btnHexB" Style="{StaticResource btnHex}" Content="B"/>
+                    <Button x:Name="btnOpenParentheses" Style="{StaticResource btnOperation}" Content="("/>
+                    <Button x:Name="btnCloseParentheses" Style="{StaticResource btnOperation}" Content=")"/>
+                    <Button x:Name="btnModulus" Style="{StaticResource btnOperation}" Content="%" Click="btnModulus_Click"/>
+                    <Button x:Name="btnDivide" Style="{StaticResource btnOperation}" Content="/" Click="btnDivide_Click"/>
+                </StackPanel>
+                <StackPanel Height="50" Width="350" Orientation="Horizontal">
+                    <Button x:Name="btnHexC" Style="{StaticResource btnHex}" Content="C"/>
+                    <Button x:Name="btnNum7" Style="{StaticResource btnNum}" Content="7" Click="btnNum7_Click"/>
+                    <Button x:Name="btnNum8" Style="{StaticResource btnNum}" Content="8" Click="btnNum8_Click"/>
+                    <Button x:Name="btnNum9" Style="{StaticResource btnNum}" Content="9" Click="btnNum9_Click"/>
+                    <Button x:Name="btnMultiply" Style="{StaticResource btnOperation}" Content="X" Click="btnMultiply_Click"/>
+                </StackPanel>
+                <StackPanel Height="50" Width="350" Orientation="Horizontal">
+                    <Button x:Name="btnHexD" Style="{StaticResource btnHex}" Content="D"/>
+                    <Button x:Name="btnNum4" Style="{StaticResource btnNum}" Content="4" Click="btnNum4_Click"/>
+                    <Button x:Name="btnNum5" Style="{StaticResource btnNum}" Content="5" Click="btnNum5_Click"/>
+                    <Button x:Name="btnNum6" Style="{StaticResource btnNum}" Content="6" Click="btnNum6_Click"/>
+                    <Button x:Name="btnSubtract" Style="{StaticResource btnOperation}" Content="-" Click="btnSubtract_Click"/>
+                </StackPanel>
+                <StackPanel Height="50" Width="350" Orientation="Horizontal">
+                    <Button x:Name="btnHexE" Style="{StaticResource btnHex}" Content="E"/>
+                    <Button x:Name="btnNum1" Style="{StaticResource btnNum}" Content="1" Click="btnNum1_Click"/>
+                    <Button x:Name="btnNum2" Style="{StaticResource btnNum}" Content="2" Click="btnNum2_Click"/>
+                    <Button x:Name="btnNum3" Style="{StaticResource btnNum}" Content="3" Click="btnNum3_Click"/>
+                    <Button x:Name="btnAdd" Style="{StaticResource btnOperation}" Content="+" Click="btnAdd_Click"/>
+                </StackPanel>
+                <StackPanel Height="50" Width="350" Orientation="Horizontal">
+                    <Button x:Name="btnHexF" Style="{StaticResource btnHex}" Content="F"/>
+                    <Button x:Name="btnSign" Style="{StaticResource btnNum}" FontSize="20" Content="+/-"/>
+                    <Button x:Name="btnNum0" Style="{StaticResource btnNum}" Content="0" Click="btnNum0_Click"/>
+                    <Button x:Name="btnEqual" Style="{StaticResource btnEql}" Content="=" Click="btnEqual_Click" Background="#FF91EBDC"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
