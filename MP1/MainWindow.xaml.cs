@@ -45,7 +45,6 @@ namespace MP1
 
         private bool _inputStart = false;
         private bool _num2Input = false;
-        private bool _doneCompute = false;
 
         public MainWindow()
         {
@@ -60,37 +59,9 @@ namespace MP1
             SetModeSelected((int)Modes.Decimal);
         }
 
-        private void NumpadAdd(int number)
+        private void NumpadAdd(int number, string letter = "")
         {
-            NumpadAddDecimal(number);
-            switch (_modeSelected)
-            {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-            }
-        }
-
-        private void SetConvertedInput(int num)
-        {
-            _convertedInput[0] = OutputHexadecimal(num);
-            _convertedInput[1] = num.ToString();
-            _convertedInput[2] = OutputOctal(num);
-            _convertedInput[3] = OutputBinary(num);
-        }
-
-        private void NumpadAddDecimal(int number)
-        {
-            if (_doneCompute)
-            {
-                _doneCompute = false;
-                ClearCalculator();
-            }
+            string input = number.ToString();
             if (!_num2Input)
             {
                 tbHistory.Text = string.Empty;
@@ -100,41 +71,109 @@ namespace MP1
                 _inputStart = true;
                 tbInput.Text = string.Empty;
             }
-
-            string input = tbInput.Text + number.ToString();
-            if (input.Length > 5)
-                input = input[1..];
-
-            tbInput.Text = input;
-
-            if (_operation == -1)
-                _num1 = int.Parse(input);
-            else
-                _num2 = int.Parse(input);
-
-            if (input.StartsWith("0"))
+            if (letter != "")
             {
-                _inputStart = false;
-                tbInput.Text = "0";
+                input = letter;
             }
-            SetConvertedInput(int.Parse(tbInput.Text));
+
+            switch (_modeSelected)
+            {
+                case 0:
+                    NumpadAddHexadecimal(input);
+                    break;
+                case 1:
+                    NumpadAddDecimal(number);
+                    break;
+                case 2:
+                    NumpadAddOctal(input);
+                    break;
+                case 3:
+                    NumpadAddBinary(input);
+                    break;
+            }
             OutputUpdateAll(_num1);
         }
-        private void NumpadAddHexadecimal()
+        private void SetConvertedInput(int num)
         {
+            _convertedInput[0] = OutputHexadecimal(num);
+            _convertedInput[1] = OutputDecimal(num);
+            _convertedInput[2] = OutputOctal(num);
+            _convertedInput[3] = OutputBinary(num);
 
+            tbInput.Text = _convertedInput[_modeSelected];
         }
-        private void NumpadAddBinary()
+        private void NumpadAddDecimal(int number)
         {
-            int[] bits = new int[64];
+            string currentInput = tbInput.Text;
+            string newInput = currentInput + number.ToString();
 
+            if (newInput.Length > 11)
+                newInput = newInput[1..];
+            if (newInput.StartsWith(','))
+                newInput = newInput[1..];
 
+            int pureInt = int.Parse(newInput.Replace(",", ""));
+            if (_operation == -1)
+                _num1 = pureInt;
+            else
+                _num2 = pureInt;
+
+            if (newInput.StartsWith("0"))
+            {
+                _inputStart = false;
+                newInput = "0";
+            }
+
+            SetConvertedInput(pureInt);
+            tbInput.Text = OutputDecimal(pureInt);
         }
-        private void NumpadAddOctal()
+        private void NumpadAddHexadecimal(string input)
         {
-            int[] bits = new int[64];
+            string currentInput = tbInput.Text;
+            string newInput = currentInput + input;
 
+            if (_operation == -1)
+            {
+                _num1 = Converter.HexadecimalToDecimal(newInput);
+                SetConvertedInput(_num1);
+            }
+            else
+            {
+                _num2 = Converter.HexadecimalToDecimal(newInput);
+                SetConvertedInput(_num2);
+            }
+        }
+        private void NumpadAddBinary(string input)
+        {
+            string currentInput = tbInput.Text;
+            string newInput = currentInput + input;
 
+            if (_operation == -1)
+            {
+                _num1 = Converter.BinaryToDecimal(newInput);
+                SetConvertedInput(_num1);
+            }
+            else
+            {
+                _num2 = Converter.BinaryToDecimal(newInput);
+                SetConvertedInput(_num2);
+            }
+        }
+        private void NumpadAddOctal(string input)
+        {
+            string currentInput = tbInput.Text;
+            string newInput = currentInput + input;
+
+            if (_operation == -1)
+            {
+                _num1 = Converter.OctalToDecimal(newInput);
+                SetConvertedInput(_num1);
+            }
+            else
+            {
+                _num2 = Converter.OctalToDecimal(newInput);
+                SetConvertedInput(_num2);
+            }
         }
 
         private void Calculate(int num, int operation) 
@@ -164,7 +203,9 @@ namespace MP1
             _num2 = 0;
             _operation = -1;
             _num2Input = false;
+            _inputStart = false;
             _history = new string[4];
+            _convertedInput = new string[4];
         }
 
         private void SetHistory()
@@ -220,13 +261,16 @@ namespace MP1
             if (operation != -1)
             {
                 Calculate(_num2, _operation);
-                tbInput.Text = _num1.ToString();
+                _operation = operation;
+                SetHistory();
+                SetConvertedInput(_num1);
                 OutputUpdateAll(_num1);
             }
-            _operation = operation;
+            else
+            {
+                SetHistory();
+            }
             _inputStart = false;
-
-            SetHistory();
 
             _num2Input = true;
         }
@@ -257,6 +301,10 @@ namespace MP1
                 tbOCT.Text = "0";
                 tbBIN.Text = "0";
                 return;
+            }
+            if (_operation == 5)
+            {
+                SetConvertedInput(_num1);
             }
             tbHEX.Text = _convertedInput[0];
             tbDEC.Text = _convertedInput[1];
@@ -320,24 +368,22 @@ namespace MP1
         }
         private string OutputOctal(int num)
         {
-            string output = Converter.DecimalToOctal(num, out _);
+            string output = Converter.DecimalToOctal(num);
 
             for (int i = output.Length - 3; i > 0; i -= 3)
             {
                 output = output.Insert(i, " ");
             }
-
             return output;
         }
         private string OutputHexadecimal(int num)
         {
-            string output = Converter.DecimalToHexadecimal(num, out _);
+            string output = Converter.DecimalToHexadecimal(num);
 
             for (int i = output.Length - 4; i > 0; i -= 4)
             {
                 output = output.Insert(i, " ");
             }
-
             return output;
         } 
         #endregion
@@ -495,20 +541,23 @@ namespace MP1
         #region Operations
         private void btnEqual_Click(object sender, RoutedEventArgs e)
         {
-            if (_operation == -1)
+            if (_operation == -1 || !_inputStart)
             {
                 return;
             }
-            SetOperation(5);
+            Calculate(_num2, _operation);
 
-            tbDEC.Text = OutputDecimal(_num1);
-            tbBIN.Text = OutputBinary(_num1);
-            tbOCT.Text = OutputOctal(_num1);
-            tbHEX.Text = OutputHexadecimal(_num1);
+            _operation = 5;
+            tbInput.Text = _num1.ToString();
+
+            SetHistory();
+            OutputUpdateAll(_num1);
+
+            _history = new string[4];
+
+            _operation = -1;
 
             SetConvertedInput(_num1);
-
-            _doneCompute = true;
         }
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -529,6 +578,33 @@ namespace MP1
         private void btnModulus_Click(object sender, RoutedEventArgs e)
         {
             SetOperation(4);
+        }
+        #endregion
+
+        #region HexInput
+        private void btnHexA_Click(object sender, RoutedEventArgs e)
+        {
+            NumpadAdd(0, "A");
+        }
+        private void btnHexB_Click(object sender, RoutedEventArgs e)
+        {
+            NumpadAdd(0, "B");
+        }
+        private void btnHexC_Click(object sender, RoutedEventArgs e)
+        {
+            NumpadAdd(0, "C");
+        }
+        private void btnHexD_Click(object sender, RoutedEventArgs e)
+        {
+            NumpadAdd(0, "D");
+        }
+        private void btnHexE_Click(object sender, RoutedEventArgs e)
+        {
+            NumpadAdd(0, "E");
+        }
+        private void btnHexF_Click(object sender, RoutedEventArgs e)
+        {
+            NumpadAdd(0, "F");
         }
         #endregion
 
@@ -571,7 +647,6 @@ namespace MP1
                 Array.Reverse(bits);
                 return bits;
             }
-
             public static int[] DecimalToBinary(int decimalNumber)
             {
                 int[] bits = new int[64];
@@ -589,49 +664,157 @@ namespace MP1
                 }
                 return Binary2sComplement(decimalNumber);
             }
-            public static string DecimalToOctal(int decimalNumber, out int[] output_16bit)
+            public static int HexadecimalToDecimal(string hexadecimal)
             {
-                string octal = string.Empty;
-
-                output_16bit = DecimalToBinary(decimalNumber);
-
-                while (decimalNumber > 0)
+                string hexadecimalNoSpace = hexadecimal.Replace(" ", "");
+                if (hexadecimalNoSpace.Contains('-'))
                 {
-                    octal = (decimalNumber % 8).ToString() + octal;
-                    decimalNumber /= 8;
+                    hexadecimalNoSpace = hexadecimalNoSpace.Replace("-", "");
+                    return Convert.ToInt32(hexadecimalNoSpace, 16) * -1;
                 }
-
-                return octal;
+                return Convert.ToInt32(hexadecimalNoSpace, 16);
             }
-            public static string DecimalToHexadecimal(int decimalNumber, out int[] output_16bit)
+            public static int BinaryToDecimal(string binary)
             {
-                string hexadecimal = string.Empty;
-                int newNumber = decimalNumber;
+                string binaryNoSpace = binary.Replace(" ", "");
+                binaryNoSpace = binaryNoSpace.Replace("\n", "");
 
-                output_16bit = DecimalToBinary(decimalNumber);
-
-                while (newNumber > 0)
+                if (binaryNoSpace.Contains('-'))
                 {
-                    int remainder = newNumber % 16;
-                    if (remainder > 9)
-                    {
-                        hexadecimal = (char)(remainder + 55) + hexadecimal;
-                    }
-                    else
-                    {
-                        hexadecimal = remainder.ToString() + hexadecimal;
-                    }
-                    newNumber /= 16;
+                    binaryNoSpace = binaryNoSpace.Replace("-", "");
+                    return Convert.ToInt32(binaryNoSpace, 2) * -1;
                 }
+                return (int)Convert.ToInt64(binaryNoSpace, 2);
+            }
+            public static int OctalToDecimal(string octal)
+            {
+                string octalNoSpace = octal.Replace(" ", "");
+                if (octalNoSpace.Contains('-'))
+                {
+                    octalNoSpace = octalNoSpace.Replace("-", "");
+                    return Convert.ToInt32(octalNoSpace, 8) * -1;
+                }
+                return Convert.ToInt32(octalNoSpace, 8);
+            }
+            public static string DecimalToOctal(int decimalNumber)
+            {
+                string octalString = Convert.ToString(Math.Abs(decimalNumber), 8).ToUpper();
+                if (decimalNumber < 0)
+                    octalString = "-" + octalString;
 
-                return hexadecimal;
+                return octalString;
+            }
+            public static string DecimalToHexadecimal(int decimalNumber)
+            {
+                string hexString = Convert.ToString(Math.Abs(decimalNumber), 16).ToUpper();
+                if (decimalNumber < 0)
+                    hexString = "-" + hexString;
+                return hexString;
+            }
+        }
+
+        private void ClearInputs()
+        {
+            if (!_inputStart)
+            {
+                return;
             }
 
-            public static void HexadecimalToBinary(string hexadecimal)
+            _inputStart = false;
+            if (!_num2Input)
             {
-                string binary = string.Empty;
-                   
+                _num1 = 0;
+            }
+            else
+            {
+                _num2 = 0;
+            }
+            OutputUpdateAll(0);
+            SetConvertedInput(0);
+        }
+
+        private void btnClearEntry_Click(object sender, RoutedEventArgs e)
+        {
+            ClearInputs();
+        }
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            ClearInputs();
+
+            ClearCalculator();
+            SetHistory();
+        }
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (tbInput.Text.Length == 0)
+            {
+                return;
+            }
+            bool isNegative = false;
+            if (_convertedInput[1].StartsWith("-"))
+            {
+                isNegative = true;
+            }
+
+            for (int i = 0; i < 4; ++i)
+            {
+                _convertedInput[i] = _convertedInput[i].Replace(",", "");
+                _convertedInput[i] = _convertedInput[i].Replace(" ", "");
+                _convertedInput[i] = _convertedInput[i].Replace("-", "");
+            }
+
+            string newInput = _convertedInput[_modeSelected];
+            newInput = newInput.Remove(newInput.Length - 1);
+
+            int newNum = 1;
+            if (newInput.Length == 0)
+            {
+                newInput = "0";
+                _inputStart = false;
+            }
+            if (isNegative)
+            {
+                newNum = -1;
+            }
+            switch (_modeSelected)
+            {
+                case 0:
+                    newNum *= Converter.HexadecimalToDecimal(newInput);
+                    break;
+                case 1:
+                    newNum *= int.Parse(newInput);
+                    break;
+                case 2:
+                    newNum *= Converter.OctalToDecimal(newInput);
+                    break;
+                case 3:
+                    newNum *= Converter.BinaryToDecimal(newInput);
+                    break;
+            }
+
+            _num1 = newNum;
+            SetConvertedInput(newNum);
+            OutputUpdateAll(newNum);
+        }
+        private void btnSign_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_inputStart)
+            {
+                return;
+            }
+
+            if (_operation == -1)
+            {
+                _num1 *= -1;
+                SetConvertedInput(_num1);
+                OutputUpdateAll(_num1);
                 
+            }
+            else
+            {
+                _num2 *= -1;
+                SetConvertedInput(_num2);
+                OutputUpdateAll(_num2);
             }
         }
     }

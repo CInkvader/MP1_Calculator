@@ -170,42 +170,40 @@
             </StackPanel>
             <StackPanel Height="300" Width="360" Orientation="Vertical">
                 <StackPanel Height="50" Width="350" Orientation="Horizontal">
-                    <Button x:Name="btnHexA" Style="{StaticResource btnHex}" Content="A"/>
-                    <Button x:Name="btnClearEntry" Style="{StaticResource btnOperation}" Content="CE"/>
-                    <Button x:Name="btnClear" Style="{StaticResource btnOperation}" Content="C"/>
-                    <Button x:Name="btnDelete" Style="{StaticResource btnOperation}" Width="140" Content="DEL"/>
+                    <Button x:Name="btnHexA" Style="{StaticResource btnHex}" Content="A" Click="btnHexA_Click"/>
+                    <Button x:Name="btnClearEntry" Width="140" Style="{StaticResource btnOperation}" Content="CE" Click="btnClearEntry_Click"/>
+                    <Button x:Name="btnClear" Width="140" Style="{StaticResource btnOperation}" Content="C" Click="btnClear_Click"/>
                 </StackPanel>
                 <StackPanel Height="50" Width="350" Orientation="Horizontal">
-                    <Button x:Name="btnHexB" Style="{StaticResource btnHex}" Content="B"/>
-                    <Button x:Name="btnOpenParentheses" Style="{StaticResource btnOperation}" Content="("/>
-                    <Button x:Name="btnCloseParentheses" Style="{StaticResource btnOperation}" Content=")"/>
+                    <Button x:Name="btnHexB" Style="{StaticResource btnHex}" Content="B" Click="btnHexB_Click"/>
                     <Button x:Name="btnModulus" Style="{StaticResource btnOperation}" Content="%" Click="btnModulus_Click"/>
                     <Button x:Name="btnDivide" Style="{StaticResource btnOperation}" Content="/" Click="btnDivide_Click"/>
+                    <Button x:Name="btnDelete" Style="{StaticResource btnOperation}" Width="140" Content="DEL" Click="btnDelete_Click"/>
                 </StackPanel>
                 <StackPanel Height="50" Width="350" Orientation="Horizontal">
-                    <Button x:Name="btnHexC" Style="{StaticResource btnHex}" Content="C"/>
+                    <Button x:Name="btnHexC" Style="{StaticResource btnHex}" Content="C" Click="btnHexC_Click"/>
                     <Button x:Name="btnNum7" Style="{StaticResource btnNum}" Content="7" Click="btnNum7_Click"/>
                     <Button x:Name="btnNum8" Style="{StaticResource btnNum}" Content="8" Click="btnNum8_Click"/>
                     <Button x:Name="btnNum9" Style="{StaticResource btnNum}" Content="9" Click="btnNum9_Click"/>
                     <Button x:Name="btnMultiply" Style="{StaticResource btnOperation}" Content="X" Click="btnMultiply_Click"/>
                 </StackPanel>
                 <StackPanel Height="50" Width="350" Orientation="Horizontal">
-                    <Button x:Name="btnHexD" Style="{StaticResource btnHex}" Content="D"/>
+                    <Button x:Name="btnHexD" Style="{StaticResource btnHex}" Content="D" Click="btnHexD_Click"/>
                     <Button x:Name="btnNum4" Style="{StaticResource btnNum}" Content="4" Click="btnNum4_Click"/>
                     <Button x:Name="btnNum5" Style="{StaticResource btnNum}" Content="5" Click="btnNum5_Click"/>
                     <Button x:Name="btnNum6" Style="{StaticResource btnNum}" Content="6" Click="btnNum6_Click"/>
                     <Button x:Name="btnSubtract" Style="{StaticResource btnOperation}" Content="-" Click="btnSubtract_Click"/>
                 </StackPanel>
                 <StackPanel Height="50" Width="350" Orientation="Horizontal">
-                    <Button x:Name="btnHexE" Style="{StaticResource btnHex}" Content="E"/>
+                    <Button x:Name="btnHexE" Style="{StaticResource btnHex}" Content="E" Click="btnHexE_Click"/>
                     <Button x:Name="btnNum1" Style="{StaticResource btnNum}" Content="1" Click="btnNum1_Click"/>
                     <Button x:Name="btnNum2" Style="{StaticResource btnNum}" Content="2" Click="btnNum2_Click"/>
                     <Button x:Name="btnNum3" Style="{StaticResource btnNum}" Content="3" Click="btnNum3_Click"/>
                     <Button x:Name="btnAdd" Style="{StaticResource btnOperation}" Content="+" Click="btnAdd_Click"/>
                 </StackPanel>
                 <StackPanel Height="50" Width="350" Orientation="Horizontal">
-                    <Button x:Name="btnHexF" Style="{StaticResource btnHex}" Content="F"/>
-                    <Button x:Name="btnSign" Style="{StaticResource btnNum}" FontSize="20" Content="+/-"/>
+                    <Button x:Name="btnHexF" Style="{StaticResource btnHex}" Content="F" Click="btnHexF_Click"/>
+                    <Button x:Name="btnSign" Style="{StaticResource btnNum}" FontSize="20" Content="+/-" Click="btnSign_Click"/>
                     <Button x:Name="btnNum0" Style="{StaticResource btnNum}" Content="0" Click="btnNum0_Click"/>
                     <Button x:Name="btnEqual" Style="{StaticResource btnEql}" Content="=" Click="btnEqual_Click" Background="#FF91EBDC"/>
                 </StackPanel>
