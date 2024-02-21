@@ -42,9 +42,10 @@ namespace MP1
         private int _operation = -1;
         private int _modeSelected = 1;
         private string[] _history = [];
-
+        
         private bool _inputStart = false;
         private bool _num2Input = false;
+        private bool _equalClicked = false;
 
         public MainWindow()
         {
@@ -56,9 +57,10 @@ namespace MP1
             _history = new string[4];
             _convertedInput = new string[4];
 
-            SetModeSelected((int)Modes.Decimal);
+            SetModeSelected((int)Modes.Decimal); // Setting default starting mode to Decimal
         }
 
+        #region NumpadAdding
         private void NumpadAdd(int number, string letter = "")
         {
             string input = number.ToString();
@@ -66,8 +68,13 @@ namespace MP1
             {
                 tbHistory.Text = string.Empty;
             }
-            if (!_inputStart)
+            if (!_inputStart || _equalClicked)
             {
+                if (_equalClicked && _num2Input && _operation == -1)
+                {
+                    tbHistory.Text = string.Empty;
+                }
+                _equalClicked = false;
                 _inputStart = true;
                 tbInput.Text = string.Empty;
             }
@@ -92,15 +99,6 @@ namespace MP1
                     break;
             }
             OutputUpdateAll(_num1);
-        }
-        private void SetConvertedInput(int num)
-        {
-            _convertedInput[0] = OutputHexadecimal(num);
-            _convertedInput[1] = OutputDecimal(num);
-            _convertedInput[2] = OutputOctal(num);
-            _convertedInput[3] = OutputBinary(num);
-
-            tbInput.Text = _convertedInput[_modeSelected];
         }
         private void NumpadAddDecimal(int number)
         {
@@ -175,8 +173,10 @@ namespace MP1
                 SetConvertedInput(_num2);
             }
         }
+        #endregion
 
-        private void Calculate(int num, int operation) 
+        #region CalculatorLogic
+        private void Calculate(int num, int operation)
         {
             switch (operation)
             {
@@ -197,6 +197,25 @@ namespace MP1
                     break;
             }
         }
+        private void ClearInputs()
+        {
+            if (!_inputStart)
+            {
+                return;
+            }
+
+            _inputStart = false;
+            if (!_num2Input)
+            {
+                _num1 = 0;
+            }
+            else
+            {
+                _num2 = 0;
+            }
+            OutputUpdateAll(0);
+            SetConvertedInput(0);
+        }
         private void ClearCalculator()
         {
             _num1 = 0;
@@ -207,7 +226,15 @@ namespace MP1
             _history = new string[4];
             _convertedInput = new string[4];
         }
+        private void SetConvertedInput(int num)
+        {
+            _convertedInput[0] = OutputHexadecimal(num);
+            _convertedInput[1] = OutputDecimal(num);
+            _convertedInput[2] = OutputOctal(num);
+            _convertedInput[3] = OutputBinary(num);
 
+            tbInput.Text = _convertedInput[_modeSelected];
+        }
         private void SetHistory()
         {
             if (_operation == -1 || _num2Input)
@@ -273,25 +300,10 @@ namespace MP1
             _inputStart = false;
 
             _num2Input = true;
-        }
+        } 
+        #endregion
 
         #region OutputUpdate
-        private void CheckInputLength()
-        {
-            if (tbInput.Text.Length > 17)
-            {
-                tbInput.FontSize = 30;
-
-                if (tbInput.Text.Length > 40)
-                {
-                    tbInput.Text = tbInput.Text.Insert(40, "\n");
-                }
-            }
-            else
-            {
-                tbInput.FontSize = 40;
-            }
-        }
         private void OutputUpdateAll(int result)
         {
             if (result == 0)
@@ -385,7 +397,23 @@ namespace MP1
                 output = output.Insert(i, " ");
             }
             return output;
-        } 
+        }
+        private void CheckInputLength()
+        {
+            if (tbInput.Text.Length > 17)
+            {
+                tbInput.FontSize = 30;
+
+                if (tbInput.Text.Length > 40)
+                {
+                    tbInput.Text = tbInput.Text.Insert(40, "\n");
+                }
+            }
+            else
+            {
+                tbInput.FontSize = 40;
+            }
+        }
         #endregion
 
         #region ModeSelection
@@ -423,7 +451,6 @@ namespace MP1
 
             tbHistory.Text = _history[mode];
         }
-
         private void SetHexMode()
         {
             for (int i = 0; i < _btnNumpad.Length; i++)
@@ -476,7 +503,9 @@ namespace MP1
             _btnNumpad[0].IsEnabled = true;
             _btnNumpad[1].IsEnabled = true;
         }
+        #endregion
 
+        #region btnModes
         private void btnHEX_Click(object sender, RoutedEventArgs e)
         {
             SetModeSelected((int)Modes.Hexadecimal);
@@ -492,7 +521,7 @@ namespace MP1
         private void btnBIN_Click(object sender, RoutedEventArgs e)
         {
             SetModeSelected((int)Modes.Binary);
-        }
+        } 
         #endregion
 
         #region btnNumpad
@@ -538,7 +567,7 @@ namespace MP1
         }
         #endregion
 
-        #region Operations
+        #region btnOperations
         private void btnEqual_Click(object sender, RoutedEventArgs e)
         {
             if (_operation == -1 || !_inputStart)
@@ -556,6 +585,7 @@ namespace MP1
             _history = new string[4];
 
             _operation = -1;
+            _equalClicked = true;
 
             SetConvertedInput(_num1);
         }
@@ -581,7 +611,7 @@ namespace MP1
         }
         #endregion
 
-        #region HexInput
+        #region btnHexInput
         private void btnHexA_Click(object sender, RoutedEventArgs e)
         {
             NumpadAdd(0, "A");
@@ -606,6 +636,93 @@ namespace MP1
         {
             NumpadAdd(0, "F");
         }
+        #endregion
+
+        #region btnSpecialOperations
+        private void btnClearEntry_Click(object sender, RoutedEventArgs e)
+        {
+            ClearInputs();
+        }
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            ClearInputs();
+
+            ClearCalculator();
+            SetHistory();
+        }
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (tbInput.Text.Length == 0)
+            {
+                return;
+            }
+            bool isNegative = false;
+            if (_convertedInput[1].StartsWith("-"))
+            {
+                isNegative = true;
+            }
+
+            for (int i = 0; i < 4; ++i)
+            {
+                _convertedInput[i] = _convertedInput[i].Replace(",", "");
+                _convertedInput[i] = _convertedInput[i].Replace(" ", "");
+                _convertedInput[i] = _convertedInput[i].Replace("-", "");
+            }
+
+            string newInput = _convertedInput[_modeSelected];
+            newInput = newInput.Remove(newInput.Length - 1);
+
+            int newNum = 1;
+            if (newInput.Length == 0)
+            {
+                newInput = "0";
+                _inputStart = false;
+            }
+            if (isNegative)
+            {
+                newNum = -1;
+            }
+            switch (_modeSelected)
+            {
+                case 0:
+                    newNum *= Converter.HexadecimalToDecimal(newInput);
+                    break;
+                case 1:
+                    newNum *= int.Parse(newInput);
+                    break;
+                case 2:
+                    newNum *= Converter.OctalToDecimal(newInput);
+                    break;
+                case 3:
+                    newNum *= Converter.BinaryToDecimal(newInput);
+                    break;
+            }
+
+            _num1 = newNum;
+            SetConvertedInput(newNum);
+            OutputUpdateAll(newNum);
+        }
+        private void btnSign_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_inputStart)
+            {
+                return;
+            }
+
+            if (_operation == -1)
+            {
+                _num1 *= -1;
+                SetConvertedInput(_num1);
+                OutputUpdateAll(_num1);
+
+            }
+            else
+            {
+                _num2 *= -1;
+                SetConvertedInput(_num2);
+                OutputUpdateAll(_num2);
+            }
+        } 
         #endregion
 
         private static class Converter
@@ -710,111 +827,6 @@ namespace MP1
                 if (decimalNumber < 0)
                     hexString = "-" + hexString;
                 return hexString;
-            }
-        }
-
-        private void ClearInputs()
-        {
-            if (!_inputStart)
-            {
-                return;
-            }
-
-            _inputStart = false;
-            if (!_num2Input)
-            {
-                _num1 = 0;
-            }
-            else
-            {
-                _num2 = 0;
-            }
-            OutputUpdateAll(0);
-            SetConvertedInput(0);
-        }
-
-        private void btnClearEntry_Click(object sender, RoutedEventArgs e)
-        {
-            ClearInputs();
-        }
-        private void btnClear_Click(object sender, RoutedEventArgs e)
-        {
-            ClearInputs();
-
-            ClearCalculator();
-            SetHistory();
-        }
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            if (tbInput.Text.Length == 0)
-            {
-                return;
-            }
-            bool isNegative = false;
-            if (_convertedInput[1].StartsWith("-"))
-            {
-                isNegative = true;
-            }
-
-            for (int i = 0; i < 4; ++i)
-            {
-                _convertedInput[i] = _convertedInput[i].Replace(",", "");
-                _convertedInput[i] = _convertedInput[i].Replace(" ", "");
-                _convertedInput[i] = _convertedInput[i].Replace("-", "");
-            }
-
-            string newInput = _convertedInput[_modeSelected];
-            newInput = newInput.Remove(newInput.Length - 1);
-
-            int newNum = 1;
-            if (newInput.Length == 0)
-            {
-                newInput = "0";
-                _inputStart = false;
-            }
-            if (isNegative)
-            {
-                newNum = -1;
-            }
-            switch (_modeSelected)
-            {
-                case 0:
-                    newNum *= Converter.HexadecimalToDecimal(newInput);
-                    break;
-                case 1:
-                    newNum *= int.Parse(newInput);
-                    break;
-                case 2:
-                    newNum *= Converter.OctalToDecimal(newInput);
-                    break;
-                case 3:
-                    newNum *= Converter.BinaryToDecimal(newInput);
-                    break;
-            }
-
-            _num1 = newNum;
-            SetConvertedInput(newNum);
-            OutputUpdateAll(newNum);
-        }
-        private void btnSign_Click(object sender, RoutedEventArgs e)
-        {
-            if (!_inputStart)
-            {
-                return;
-            }
-
-            if (_operation == -1)
-            {
-                _num1 *= -1;
-                SetConvertedInput(_num1);
-                OutputUpdateAll(_num1);
-                
-            }
-            else
-            {
-                _num2 *= -1;
-                SetConvertedInput(_num2);
-                OutputUpdateAll(_num2);
             }
         }
     }
